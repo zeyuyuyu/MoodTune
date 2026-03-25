@@ -3,148 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoodTune - Track Your Music & Mood</title>
+    <title>MoodTune - Share Your Mood Journey!</title>
     <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        :root { --primary: #6C63FF; --secondary: #FF6B6B; }
+        body { font-family: 'Segoe UI', system-ui; margin: 0; background: #fafafa; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .mood-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            animation: slideUp 0.3s ease;
+        }
+        .streak-banner {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
             color: white;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-        .mood-slider {
-            background: rgba(255,255,255,0.1);
-            padding: 2rem;
-            border-radius: 1rem;
-            text-align: center;
-            margin: 2rem 0;
-        }
-        .emoji-strip {
-            display: flex;
-            justify-content: space-between;
-            font-size: 2rem;
-            margin: 1rem 0;
-        }
-        input[type="range"] {
-            width: 100%;
-            height: 15px;
-            -webkit-appearance: none;
-            background: rgba(255,255,255,0.2);
+            padding: 15px;
             border-radius: 10px;
-            outline: none;
+            text-align: center;
+            margin-bottom: 20px;
         }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 25px;
-            height: 25px;
-            background: #fff;
+        .mood-reactions { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+        .mood-btn {
+            padding: 15px;
+            border: none;
             border-radius: 50%;
+            font-size: 24px;
             cursor: pointer;
-        }
-        .song-input {
-            background: rgba(255,255,255,0.1);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin: 1rem 0;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 0.5rem;
-            border: none;
-            border-radius: 0.25rem;
-            background: rgba(255,255,255,0.9);
-        }
-        button {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-size: 1rem;
-            margin-top: 1rem;
             transition: transform 0.2s;
         }
-        button:hover {
-            transform: scale(1.05);
+        .mood-btn:hover { transform: scale(1.2); }
+        .share-section {
+            text-align: center;
+            margin: 20px 0;
         }
-        .history {
-            margin-top: 2rem;
+        .share-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
         }
-        .entry {
-            background: rgba(255,255,255,0.1);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin: 0.5rem 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .achievements {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .achievement {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #eee;
+        }
+        .achievement.unlocked {
+            border-color: var(--primary);
+            animation: glow 1.5s infinite alternate;
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 5px var(--primary); }
+            to { box-shadow: 0 0 20px var(--primary); }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>MoodTune</h1>
-        <div class="mood-slider">
-            <h2>How are you feeling?</h2>
-            <div class="emoji-strip">
-                <span>😢</span>
-                <span>😕</span>
-                <span>😐</span>
-                <span>🙂</span>
-                <span>😄</span>
-            </div>
-            <input type="range" min="1" max="5" value="3" id="moodSlider">
+        <div class="streak-banner">
+            <h2>🔥 7 Day Streak!</h2>
+            <p>Share your streak to unlock exclusive themes!</p>
         </div>
-        <div class="song-input">
-            <h2>What are you listening to?</h2>
-            <input type="text" id="songInput" placeholder="Enter song name and artist...">
-        </div>
-        <button onclick="saveMoodAndSong()">Save Entry</button>
-        <div class="history" id="history"></div>
-    </div>
-    <script>
-        const moodEmojis = ['😢', '😕', '😐', '🙂', '😄'];
         
-        function saveMoodAndSong() {
-            const mood = document.getElementById('moodSlider').value;
-            const song = document.getElementById('songInput').value;
-            
-            if (!song) {
-                alert('Please enter a song!');
-                return;
-            }
-            
-            const entry = document.createElement('div');
-            entry.className = 'entry';
-            entry.innerHTML = `
-                <div>
-                    <strong>${moodEmojis[mood-1]}</strong> 
-                    ${song}
+        <div class="mood-card">
+            <h3>How are you feeling right now?</h3>
+            <div class="mood-reactions">
+                <button class="mood-btn" onclick="recordMood('😄')">😄</button>
+                <button class="mood-btn" onclick="recordMood('😊')">😊</button>
+                <button class="mood-btn" onclick="recordMood('😐')">😐</button>
+                <button class="mood-btn" onclick="recordMood('😔')">😔</button>
+                <button class="mood-btn" onclick="recordMood('😢')">😢</button>
+            </div>
+        </div>
+
+        <div class="achievements">
+            <div class="achievement unlocked">
+                <h4>🌟 First Step</h4>
+                <p>Started your mood journey</p>
+            </div>
+            <div class="achievement">
+                <h4>🎯 Week Master</h4>
+                <p>7 day streak</p>
+            </div>
+            <div class="achievement">
+                <h4>🌈 Mood Warrior</h4>
+                <p>Share 5 times</p>
+            </div>
+        </div>
+
+        <div class="share-section">
+            <button class="share-btn" onclick="shareJourney()">📱 Share My Mood Journey</button>
+        </div>
+    </div>
+
+    <script>
+        let streak = 7;
+        let lastMood = null;
+
+        function recordMood(mood) {
+            lastMood = mood;
+            const moodCard = document.createElement('div');
+            moodCard.className = 'mood-card';
+            moodCard.innerHTML = `
+                <h3>Mood recorded! ${mood}</h3>
+                <p>Others feeling the same way: ${Math.floor(Math.random() * 1000) + 100} people</p>
+                <div class="share-section">
+                    <button class="share-btn" onclick="shareSpecificMood('${mood}')">Share this mood</button>
                 </div>
-                <small>${new Date().toLocaleTimeString()}</small>
             `;
-            
-            const history = document.getElementById('history');
-            history.insertBefore(entry, history.firstChild);
-            
-            // Clear input
-            document.getElementById('songInput').value = '';
-            
-            // Animation
-            entry.style.opacity = '0';
-            entry.style.transform = 'translateY(-20px)';
-            setTimeout(() => {
-                entry.style.transition = 'all 0.3s ease';
-                entry.style.opacity = '1';
-                entry.style.transform = 'translateY(0)';
-            }, 50);
+            document.querySelector('.container').insertBefore(moodCard, document.querySelector('.achievements'));
+            updateStreak();
         }
+
+        function updateStreak() {
+            if (Math.random() > 0.5) {
+                const achievement = document.createElement('div');
+                achievement.className = 'mood-card';
+                achievement.innerHTML = `
+                    <h3>🎉 Achievement Unlocked!</h3>
+                    <p>You've made progress on your mood journey!</p>
+                `;
+                document.querySelector('.container').insertBefore(achievement, document.querySelector('.achievements'));
+            }
+        }
+
+        function shareJourney() {
+            alert('Share your mood journey with friends to earn exclusive themes and achievements! 🌟');
+        }
+
+        function shareSpecificMood(mood) {
+            alert(`Share how you're feeling ${mood} with friends! The more you share, the more rewards you unlock! 🎁`);
+        }
+
+        // Gamification features
+        setInterval(() => {
+            const randomMessages = [
+                '👋 Friends are sharing their moods now!',
+                '🎯 You're close to unlocking a new achievement!',
+                '✨ Special theme available for next 2 hours!'
+            ];
+            const notification = document.createElement('div');
+            notification.className = 'mood-card';
+            notification.innerHTML = `<p>${randomMessages[Math.floor(Math.random() * randomMessages.length)]}</p>`;
+            document.querySelector('.container').insertBefore(notification, document.querySelector('.mood-card'));
+            setTimeout(() => notification.remove(), 3000);
+        }, 15000);
     </script>
 </body>
 </html>
